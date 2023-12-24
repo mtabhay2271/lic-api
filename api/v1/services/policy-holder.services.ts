@@ -35,16 +35,39 @@ class ServicesData {
     try {
       let payload = req.user as IPayAuth;
 
+      //pagination
       let pageNumber: any = req?.query?.pageNumber ? req?.query?.pageNumber : 1;
       let pageSize: any = req?.query?.pageSize ? req.query.pageSize : 100;
       let skip = pageSize * (parseInt(pageNumber) - 1);
-      
-      console.log(pageNumber, pageSize+1, skip);
+
+      //sorting
+      let sort: any = req?.query?.sort ? req?.query?.sort : "createdAt";
+      let sortType: any = req?.query?.sortType ? req?.query?.sortType : -1;
+      if (sort == "name") {
+        sort = { name: sortType }
+      } else if (sort == "policyNo") {
+        sort = { policyNo: sortType }
+      } else if (sort == "typeOfEmi") {
+        sort = { typeOfEmi: sortType }
+      } else if (sort == "nextDue") {
+        sort = { nextDue: sortType }
+      } else {
+        sort = { createdAt: sortType }
+      }
+
+      //serching
+      // let findQuery = req?.query?.search
+      // if (findQuery) {
+      //   findQuery = { userId: payload.userId, name: { $regex: findQuery, $options: 'i' } }
+      // } else {
+      //   findQuery = { userId: payload.userId }
+      // }
+
+      // console.log(findQuery);
 
 
-      let data: any = await PolicyHolder.find({ userId: payload.userId }, { name: 1, policyNo: 1, nextDue: 1, typeOfEmi: 1, createdAt: 1 }).sort({ createdAt: 1 }).skip(skip).limit(parseInt(pageSize)+1).lean();
+      let data: any = await PolicyHolder.find({ userId: payload.userId }, { name: 1, policyNo: 1, nextDue: 1, typeOfEmi: 1, createdAt: 1 }).sort(sort).skip(skip).limit(parseInt(pageSize) + 1).lean();
       if (data) {
-        // console.log(data);
         let isNext = false;
         if (data.length > pageSize) {
           isNext = true;
