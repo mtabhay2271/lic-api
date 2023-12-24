@@ -1,23 +1,24 @@
-import { Request, Response, query } from "express";
-import { ICommonServices } from "../interfaces/response_interfaces";
+import { Request } from "express";
+import { ICommonServices, IPayAuth } from "../interfaces/response_interfaces";
 import _ from "lodash";
 import responseMessages from "../common/response.messages";
-import Pay from "../models/upi";
+import { AddViewModel } from "../view_model/policy-holder";
+import Users from "../models/users";
+
+
 class dataServicesData {
 
-  createUpi = async (req: Request): Promise<ICommonServices> => {
+  add = async (req: Request, reqData: AddViewModel): Promise<ICommonServices> => {
     try {
-      let data = await Pay.create(
-        {
-          upi: req.body.upi
-        }
-      )
+      let payload = req.user as IPayAuth;
+      let data: any = await Users.findByIdAndUpdate(payload.userId, { $set: { ...reqData } });
       if (data) {
+        // console.log(data);
         return {
           statusCode: 200,
           data: {
             success: true,
-            message: "upi Added",
+            message: "Bank details added",
             data
           }
         };
@@ -29,17 +30,18 @@ class dataServicesData {
       return { statusCode: 500, data: { success: false, message: responseMessages.ERROR_OCCURRE } };
     }
   };
-  getUpi = async (req: Request): Promise<ICommonServices> => {
-    try {
-      let data = await Pay.find({}).lean()
 
+  getDetails = async (userId: string): Promise<ICommonServices> => {
+    try {
+      let data: any = await Users.findById(userId, { bank: 1, accountHolderName: 1, ifscCode: 1 }).lean();
       if (data) {
+        // console.log(data);
         return {
           statusCode: 200,
           data: {
             success: true,
-            message: "Pay Found",
-            data: data[0]
+            message: "Bank Details found",
+            data
           }
         };
       } else {
@@ -50,6 +52,8 @@ class dataServicesData {
       return { statusCode: 500, data: { success: false, message: responseMessages.ERROR_OCCURRE } };
     }
   };
+
+
 }
 export default new dataServicesData();
 
