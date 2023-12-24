@@ -17,7 +17,7 @@ class ControllersData {
         });
       } else {
         let reqData: AddViewModel = validatedData.data as AddViewModel;
-        let user = await Services.addBankDetails(req, reqData);
+        let user = await Services.add(req, reqData);
         return res.status(user.statusCode).send(user.data);
       }
     } catch (error) {
@@ -29,11 +29,23 @@ class ControllersData {
     }
   };
 
+  getList = async (req: Request, res: Response<ICommonController>) => {
+    try {
+      let user = await Services.getlist(req);
+      return res.status(user.statusCode).send(user.data);
+    } catch (error) {
+      return res.status(500).send({
+        success: false,
+        message: responseMessages.ERROR_ISE,
+        error
+      });
+    }
+  };
+
   getDetails = async (req: Request, res: Response<ICommonController>) => {
-    try {      
-      let payload = req.user as IPayAuth;
-      let data = await Services.getBankDetails(payload.userId);
-       return res.status(data.statusCode).send(data.data);
+    try {
+      let data = await Services.getDetails(req);
+      return res.status(data.statusCode).send(data.data);
     } catch (error) {
       console.log("Error", error);
       return res.status(500).send({
@@ -43,9 +55,9 @@ class ControllersData {
       });
     }
   };
- 
 
- }
+
+}
 
 
 

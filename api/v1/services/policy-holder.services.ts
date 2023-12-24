@@ -3,22 +3,22 @@ import { ICommonServices, IPayAuth } from "../interfaces/response_interfaces";
 import _ from "lodash";
 import responseMessages from "../common/response.messages";
 import { AddViewModel } from "../view_model/policy-holder";
-import Users from "../models/users";
+import PolicyHolder from "../models/policy-holder";
 
 
-class dataServicesData {
+class ServicesData {
 
   add = async (req: Request, reqData: AddViewModel): Promise<ICommonServices> => {
     try {
       let payload = req.user as IPayAuth;
-      let data: any = await Users.findByIdAndUpdate(payload.userId, { $set: { ...reqData } });
+      let data: any = await PolicyHolder.create({ ...reqData, userId: payload.userId });
       if (data) {
         // console.log(data);
         return {
           statusCode: 200,
           data: {
             success: true,
-            message: "Bank details added",
+            message: "Policy holder added",
             data
           }
         };
@@ -31,16 +31,41 @@ class dataServicesData {
     }
   };
 
-  getDetails = async (userId: string): Promise<ICommonServices> => {
+  getlist = async (req: Request): Promise<ICommonServices> => {
     try {
-      let data: any = await Users.findById(userId, { bank: 1, accountHolderName: 1, ifscCode: 1 }).lean();
+      let payload = req.user as IPayAuth;
+      let data: any = await PolicyHolder.find({ userId: payload.userId }, { name: 1, policyNo: 1, nextDue: 1, typeOfEmi: 1, createdAt: 1 }).lean();
       if (data) {
         // console.log(data);
         return {
           statusCode: 200,
           data: {
             success: true,
-            message: "Bank Details found",
+            message: "Policy Holder list found",
+            data
+          }
+        };
+      } else {
+        return { statusCode: 200, data: { success: false, message: responseMessages.USER_DETAILS_FOUND_NOT } };
+      }
+    } catch (error) {
+      console.log(error);
+      return { statusCode: 500, data: { success: false, message: responseMessages.ERROR_OCCURRE } };
+    }
+  };
+
+
+  getDetails = async (req: Request): Promise<ICommonServices> => {
+    try {
+      let payload = req.user as IPayAuth;
+      let data: any = await PolicyHolder.findById(req.params.policyHolderId).lean();
+      if (data) {
+        // console.log(data);
+        return {
+          statusCode: 200,
+          data: {
+            success: true,
+            message: "Policy Holder Details found",
             data
           }
         };
@@ -55,5 +80,5 @@ class dataServicesData {
 
 
 }
-export default new dataServicesData();
+export default new ServicesData();
 
