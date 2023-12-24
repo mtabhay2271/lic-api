@@ -34,15 +34,34 @@ class ServicesData {
   getlist = async (req: Request): Promise<ICommonServices> => {
     try {
       let payload = req.user as IPayAuth;
-      let data: any = await PolicyHolder.find({ userId: payload.userId }, { name: 1, policyNo: 1, nextDue: 1, typeOfEmi: 1, createdAt: 1 }).lean();
+
+      let pageNumber: any = req?.query?.pageNumber ? req?.query?.pageNumber : 1;
+      let pageSize: any = req?.query?.pageSize ? req.query.pageSize : 100;
+      let skip = pageSize * (parseInt(pageNumber) - 1);
+      
+      console.log(pageNumber, pageSize+1, skip);
+
+
+      let data: any = await PolicyHolder.find({ userId: payload.userId }, { name: 1, policyNo: 1, nextDue: 1, typeOfEmi: 1, createdAt: 1 }).sort({ createdAt: 1 }).skip(skip).limit(parseInt(pageSize)+1).lean();
       if (data) {
         // console.log(data);
+        let isNext = false;
+        if (data.length > pageSize) {
+          isNext = true;
+          data.pop();
+        }
+        let metaData = {
+          pageSize,
+          pageNumber,
+          isNext,
+        };
+
         return {
           statusCode: 200,
           data: {
             success: true,
             message: "Policy Holder list found",
-            data
+            data: { data, metaData }
           }
         };
       } else {
