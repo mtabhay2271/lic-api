@@ -100,7 +100,7 @@ class ServicesData {
   getDetails = async (req: Request): Promise<ICommonServices> => {
     try {
       let payload = req.user as IPayAuth;
-      let data: any = await PolicyHolder.findById(req.params.policyHolderId).lean();
+      let data: any = await PolicyHolder.findById(req.params.id).lean();
       if (data) {
         // console.log(data);
         return {
@@ -121,6 +121,28 @@ class ServicesData {
   };
 
 
+  update = async (req: Request, reqData: AddViewModel): Promise<ICommonServices> => {
+    try {
+      let payload = req.user as IPayAuth;
+      let data: any = await PolicyHolder.findByIdAndUpdate(req.params.id, { $set: { ...reqData, userId: payload.userId } });
+      if (data) {
+        // console.log(data);
+        return {
+          statusCode: 200,
+          data: {
+            success: true,
+            message: "Policy holder updated",
+            data
+          }
+        };
+      } else {
+        return { statusCode: 200, data: { success: false, message: responseMessages.USER_DETAILS_FOUND_NOT } };
+      }
+    } catch (error) {
+      console.log(">>",error);
+      return { statusCode: 500, data: { success: false, message: responseMessages.ERROR_OCCURRE } };
+    }
+  };
 }
 export default new ServicesData();
 

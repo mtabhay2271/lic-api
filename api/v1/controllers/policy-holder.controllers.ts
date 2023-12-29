@@ -56,7 +56,29 @@ class ControllersData {
     }
   };
 
-
+  update = async (req: Request, res: Response<ICommonController>) => {
+    try {
+      let validatedData: Validation = await utility.validateAndConvert(AddViewModel, req.body);
+      if (validatedData.error) {
+        return res.status(400).send({
+          success: false,
+          message: responseMessages.VALIDATION_ERROR,
+          data: validatedData.error,
+        });
+      } else {
+        let reqData: AddViewModel = validatedData.data as AddViewModel;
+        let user = await Services.update(req, reqData);
+        return res.status(user.statusCode).send(user.data);
+      }
+    } catch (error) {
+      console.log("Error", error);
+      return res.status(500).send({
+        success: false,
+        message: responseMessages.ERROR_ISE,
+        error
+      });
+    }
+  };
 }
 
 

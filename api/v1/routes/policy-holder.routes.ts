@@ -8,6 +8,7 @@ const router = Router();
 router.post("/", utility.authenticateUser, Controller.add);
 router.get("/", utility.authenticateUser, Controller.getList);
 //using
-router.get("/:policyHolderId", utility.authenticateUser, Controller.getDetails);
+router.get("/:id", utility.authenticateUser, Controller.getDetails);
+router.patch("/:id", utility.authenticateUser, Controller.update);
 
 export default router;
