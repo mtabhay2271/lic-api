@@ -104,12 +104,14 @@ export class PolicyHolderModel {
     @prop()
     bank: string;
 
+    @prop()
+    accHolder: string;
 
     @prop()
     accNo: number;
 
     @prop()
-    idfscCode: string;
+    ifscCode: string;
 
 
     @prop()
@@ -127,7 +129,13 @@ export class PolicyHolderModel {
     termRider: number;
 
     @prop()
-    slipNun1: number;
+    term: number;
+
+    @prop()
+    ppt: number;
+
+    @prop()
+    slipNum1: number;
 
     @prop()
     doc: string;
