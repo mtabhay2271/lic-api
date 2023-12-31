@@ -120,7 +120,6 @@ class ServicesData {
     }
   };
 
-
   update = async (req: Request, reqData: AddViewModel): Promise<ICommonServices> => {
     try {
       let payload = req.user as IPayAuth;

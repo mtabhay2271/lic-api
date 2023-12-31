@@ -38,9 +38,9 @@ app.use("/api", (req: Request, res: Response, next: NextFunction) => {
   next();
 }, routes);
 
-app.get("/test", (req, res) => {
-  res.json({ message: "Working" });
-})
+// app.get("/test", (req, res) => {
+//   res.json({ message: "Working" });
+// })
 
 const PORT = process.env.PORT || 7009;
 server.listen(PORT, () => console.log(`App listening on ${PORT}`));
