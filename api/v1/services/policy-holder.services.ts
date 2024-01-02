@@ -71,7 +71,7 @@ class ServicesData {
         findQuery = { userId: payload.userId }
       }
 
-      console.log(findQuery);
+      // console.log(findQuery);
 
 
       let data: any = await PolicyHolder.find(findQuery, { name: 1, policyNo: 1, nextDue: 1, typeOfEmi: 1, createdAt: 1 }).sort(sort).skip(skip).limit(parseInt(pageSize) + 1).lean();
