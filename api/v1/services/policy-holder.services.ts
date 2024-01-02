@@ -37,7 +37,7 @@ class ServicesData {
 
       //pagination
       let pageNumber: any = req?.query?.pageNumber ? req?.query?.pageNumber : 1;
-      let pageSize: any = req?.query?.pageSize ? req.query.pageSize : 100;
+      let pageSize: any = req?.query?.pageSize ? req.query.pageSize : 20;
       let skip = pageSize * (parseInt(pageNumber) - 1);
 
       //sorting
