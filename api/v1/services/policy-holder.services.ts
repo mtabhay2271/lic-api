@@ -55,18 +55,27 @@ class ServicesData {
         sort = { createdAt: sortType }
       }
 
-      //serching
-      // let findQuery = req?.query?.search
-      // if (findQuery) {
-      //   findQuery = { userId: payload.userId, name: { $regex: findQuery, $options: 'i' } }
-      // } else {
-      //   findQuery = { userId: payload.userId }
-      // }
+      // serching
+      let findQuery = req?.query?.search
+      if (findQuery) {
+        findQuery = {
+          userId: payload.userId,
+          $or: [
+            { name: { $regex: findQuery, $options: 'i' } },
+            { nextDue: { $regex: findQuery, $options: 'i' } },
+            { policyNo: { $regex: findQuery, $options: 'i' } },
+            { typeOfEmi: { $regex: findQuery, $options: 'i' } }
+          ]
+        }
+      } else {
+        findQuery = { userId: payload.userId }
+      }
 
-      // console.log(findQuery);
+      console.log(findQuery);
 
 
-      let data: any = await PolicyHolder.find({ userId: payload.userId }, { name: 1, policyNo: 1, nextDue: 1, typeOfEmi: 1, createdAt: 1 }).sort(sort).skip(skip).limit(parseInt(pageSize) + 1).lean();
+      let data: any = await PolicyHolder.find(findQuery, { name: 1, policyNo: 1, nextDue: 1, typeOfEmi: 1, createdAt: 1 }).sort(sort).skip(skip).limit(parseInt(pageSize) + 1).lean();
+      // let data: any = await PolicyHolder.find({ userId: payload.userId }, { name: 1, policyNo: 1, nextDue: 1, typeOfEmi: 1, createdAt: 1 }).sort(sort).skip(skip).limit(parseInt(pageSize) + 1).lean();
       if (data) {
         let isNext = false;
         if (data.length > pageSize) {
@@ -138,7 +147,7 @@ class ServicesData {
         return { statusCode: 200, data: { success: false, message: responseMessages.USER_DETAILS_FOUND_NOT } };
       }
     } catch (error) {
-      console.log(">>",error);
+      console.log(">>", error);
       return { statusCode: 500, data: { success: false, message: responseMessages.ERROR_OCCURRE } };
     }
   };
