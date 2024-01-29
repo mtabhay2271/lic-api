@@ -32,11 +32,7 @@ app.use("/public/data", express.static("public/imp"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 ////////////////////
-
-const Message = mongoose.model('Message', {
-  text: String,
-  user: String,
-});
+import Message from "./api/v1/models/message";
 // API endpoint for getting messages
 app.get('/messages', async (req, res) => {
   try {
