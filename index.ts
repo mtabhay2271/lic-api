@@ -8,6 +8,7 @@ import http from "http";
 import DBConnation from './db.connation'
 // import Corn from './api/v1/common/cronJob';
 
+const mongoose = require('mongoose');
 dotenv.config();
 // const cronJob = require("./api/v1/common/cronJob");
 //creating App
@@ -30,7 +31,38 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use("/public/data", express.static("public/imp"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+////////////////////
 
+const Message = mongoose.model('Message', {
+  text: String,
+  user: String,
+});
+// API endpoint for getting messages
+app.get('/messages', async (req, res) => {
+  try {
+    const messages = await Message.find();
+    res.json(messages);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// API endpoint for posting a message
+app.post('/messages', async (req, res) => {
+  const { text, user } = req.body;
+
+  try {
+    const newMessage = new Message({ text, user });
+    await newMessage.save();
+    res.status(201).json(newMessage);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+//////////////////
 // app.use("/service_thumbnail", express.static("public/uploads/service_types_images"));
 app.use("/api", (req: Request, res: Response, next: NextFunction) => {
   // console.log("headers>>>>", req.headers.authorization, "<<<<<headers");
